@@ -1,8 +1,7 @@
 import ReconnectingWebSocket from 'reconnecting-websocket'
-import Ws from './WebSocket'
-// import WebSocket from 'ws';
+import BinanceWebSocket from './WebSocket'
 import EventDispatcher from './EventDispatcher'
-import { generateSignature, generateId, extend, toUrlParams } from './functions'
+import { generateSignature, generateId, extend, toUrlParams, getWebSocketBrowser } from './functions'
 
 interface RateLimit {
     count: number;
@@ -13,13 +12,16 @@ interface RateLimit {
 export default class BinanceWebsocketApi extends EventDispatcher {
 
     socket: any
+    ws: any
     connected: boolean = false
+    currentListenKey: string = ''
     requestList: any = {}
     rateLimit: RateLimit = {
         count: 0,
         limit: 1200,
         remain: 1200
     }
+    pingTimeout: any = 0;
 
     privateRequest: (id: string, method: string, params?: any) => Promise<any>;
     request: (id: string, method: string, params?: any, addApiKey?: boolean) => Promise<any>;
@@ -29,6 +31,15 @@ export default class BinanceWebsocketApi extends EventDispatcher {
         super()
 
         const { apiKey, apiSecret, webSocket} = params;
+
+        const Ws = getWebSocketBrowser();
+
+        this.ws = BinanceWebSocket({
+            getDataStream: this.getDataStream.bind(this),
+            keepDataStream: this.keepDataStream.bind(this),
+            closeDataStream: this.closeDataStream.bind(this),
+            webSocket: Ws || webSocket
+        });
 
         this.privateRequest = async (id: string, method: string, params?: any) => {
 
@@ -103,6 +114,9 @@ export default class BinanceWebsocketApi extends EventDispatcher {
 
         this.socket.onopen = () => {
             this.dispatchEvent('connected')
+            this.pingTimeout = setTimeout(() => {
+                this.ping();
+            }, 1000 * 60 * 59)
             this.connected = true;
             if (this.socket._ws.on) {
                 this.socket._ws.on('ping', pong)
@@ -112,9 +126,6 @@ export default class BinanceWebsocketApi extends EventDispatcher {
         this.socket.onclose = () => {
             this.connected = false;
             this.dispatchEvent('disconnected');
-            setTimeout(() => {
-                this.connectWebSocket(webSocket);
-            }, 2000);
         }
 
         this.socket.onerror = () => {
@@ -234,12 +245,36 @@ export default class BinanceWebsocketApi extends EventDispatcher {
         return this.privateRequest(generateId(), 'myPreventedMatches', params);
     }
 
-    async ping(){
+    async getDataStream(): Promise<string | undefined>{
         const result = await this.request(generateId(), 'userDataStream.start', {}, true);
         const { listenKey } = result;
+        return listenKey || undefined;
+    }
+
+    async ping(listenKey?: string): Promise<boolean>{
+        listenKey = listenKey ? listenKey : await this.getDataStream();
+        if(!listenKey){
+            return false;
+        }
         await this.request(generateId(), 'userDataStream.ping', {
             listenKey: listenKey
         }, true);
+        return true;
+    }
+
+    async keepDataStream(listenKey?: string): Promise<boolean>{
+        return this.ping(listenKey)
+    }
+
+    async closeDataStream(listenKey?: string): Promise<boolean>{
+        listenKey = listenKey ? listenKey : await this.getDataStream();
+        if(!listenKey){
+            return false;
+        }
+        await this.request(generateId(), 'userDataStream.stop', {
+            listenKey: listenKey
+        }, true);
+        return true;
     }
 
     async exchangeInfo(params: any): Promise<any>{
