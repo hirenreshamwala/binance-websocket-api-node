@@ -32,7 +32,7 @@ export default class BinanceWebsocketApi extends EventDispatcher {
 
         this.privateRequest = async (id: string, method: string, params?: any) => {
 
-            const timestamp = await this.serverTime();
+            const timestamp = await this.time();
 
             const newPrams = extend({
                 apiKey: apiKey
@@ -155,11 +155,15 @@ export default class BinanceWebsocketApi extends EventDispatcher {
         }
     }
 
-    async serverTime(){
-        const id = generateId();
-        const method = 'time';
-        const result = await this.request(id, method)
-        return result.serverTime;
+    async time(){
+        try {
+            const id = generateId();
+            const method = 'time';
+            const result = await this.request(id, method)
+            return result.serverTime;
+        } catch(e: any){
+            this.dispatchEvent('error', e.message);
+        }
     }
 
     async testOrder(params: any): Promise<any>{
