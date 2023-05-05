@@ -1,8 +1,8 @@
 {
   "name": "binance-websocket-api-node",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Binance websocket api using node js",
-  "main": "./dist/binance-websocket-api-cjs.js",
+  "main": "./dist/binance-websocket-api-cjs.cjs",
   "module": "./dist/binance-websocket-api-mjs.js",
   "types": "./dist/binance-websocket-api.d.ts",
   "type": "module",

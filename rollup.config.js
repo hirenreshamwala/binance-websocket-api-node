@@ -21,7 +21,7 @@ export default {
             sourcemap: true
         },
         {
-            file: 'dist/binance-websocket-api-cjs.js',
+            file: 'dist/binance-websocket-api-cjs.cjs',
             format: 'cjs',
             sourcemap: true
         },
