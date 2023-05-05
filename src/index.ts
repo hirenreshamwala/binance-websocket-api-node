@@ -166,7 +166,7 @@ export default class BinanceWebsocketApi extends EventDispatcher {
         }
     }
 
-    async testOrder(params: any): Promise<any>{
+    async orderTest(params: any): Promise<any>{
         return this.privateRequest(generateId(), 'order.test', params);
     }
 
@@ -186,7 +186,7 @@ export default class BinanceWebsocketApi extends EventDispatcher {
         return this.privateRequest(generateId(), 'order.cancelReplace', params);
     }
 
-    async getOpenOrders(params: any): Promise<any>{
+    async openOrders(params: any): Promise<any>{
         return this.privateRequest(generateId(), 'openOrders.status', params);
     }
 
@@ -206,7 +206,7 @@ export default class BinanceWebsocketApi extends EventDispatcher {
         return this.privateRequest(generateId(), 'orderList.cancel', params);
     }
 
-    async getOpenOrdersOco(params: any): Promise<any>{
+    async openOrdersOco(params: any): Promise<any>{
         return this.privateRequest(generateId(), 'openOrderLists.status', params);
     }
 
@@ -240,5 +240,9 @@ export default class BinanceWebsocketApi extends EventDispatcher {
         await this.request(generateId(), 'userDataStream.ping', {
             listenKey: listenKey
         }, true);
+    }
+
+    async exchangeInfo(params: any): Promise<any>{
+        return this.request(generateId(), 'exchangeInfo', params);
     }
 }
