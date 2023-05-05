@@ -38,3 +38,19 @@ export const getTimeStamp = () => {
 }
 
 export const extend = (...args: { apiKey?: any; }[]) => Object.assign ({}, ...args)
+
+export const getWebSocketBrowser = (): any => {
+    var ws = undefined;
+    if (typeof WebSocket !== 'undefined') {
+      ws = WebSocket;
+      // @ts-ignore
+    } else if (typeof MozWebSocket !== 'undefined') {
+      // @ts-ignore
+      ws = MozWebSocket;
+    } else if (typeof global !== 'undefined') {
+      ws = global.WebSocket || (global as any).MozWebSocket;
+    } else if (typeof window !== 'undefined') {
+      ws = window.WebSocket || (window as any).MozWebSocket;
+    }
+    return ws;
+};
