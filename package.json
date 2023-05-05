@@ -1,0 +1,52 @@
+{
+  "name": "binance-websocket-api-node",
+  "version": "1.0.0",
+  "description": "Binance websocket api using node js",
+  "main": "./dist/binance-websocket-api-cjs.js",
+  "module": "./dist/binance-websocket-api-mjs.js",
+  "types": "./dist/binance-websocket-api.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "rimraf dist && rollup -c && uglifyjs --compress --mangle -o dist/binance-websocket-api-iife.min.js dist/binance-websocket-api-iife.js",
+    "watch": "rollup -c -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hirenreshamwala/binance-websocket-api-node.git"
+  },
+  "keywords": [
+    "binance",
+    "api",
+    "websocket",
+    "client"
+  ],
+  "author": "Hiren Reshamwala <hiren.reshamwala@gmail.com>",
+  "files": [
+    "dist/*"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hirenreshamwala/binance-websocket-api-node/issues"
+  },
+  "homepage": "https://github.com/hirenreshamwala/binance-websocket-api-node#readme",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^24.1.0",
+    "@rollup/plugin-inject": "^5.0.3",
+    "@rollup/plugin-node-resolve": "^15.0.2",
+    "@rollup/plugin-terser": "^0.4.1",
+    "@types/crypto-js": "^4.1.1",
+    "@types/node": "^18.16.3",
+    "@types/ws": "^8.5.4",
+    "crypto-es": "^1.2.7",
+    "deepmerge": "^4.3.1",
+    "rimraf": "^5.0.0",
+    "rollup": "^3.21.4",
+    "rollup-plugin-polyfill-node": "^0.12.0",
+    "rollup-plugin-typescript2": "^0.34.1",
+    "typescript": "^5.0.4",
+    "uglify-es": "^3.3.9"
+  },
+  "dependencies": {
+    "reconnecting-websocket": "^4.4.0"
+  }
+}
