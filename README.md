@@ -60,7 +60,8 @@ Following examples will use the `await` form, which requires some configuration 
   - [myTrades](#mytrades)
   - [getOrderRateLimits](#getOrderRateLimits)
   - [myPreventedMatches](#myPreventedMatches)
-
+- [Websockets](#websockets)
+  - [user](#user)
 
 ### Init
 
@@ -276,4 +277,21 @@ console.log(
     endTime: 1660867200000,
   }),
 )
+```
+
+### WebSockets
+
+Every websocket utility returns a function you can call to close the opened
+connection and avoid memory issues.
+
+#### user
+
+Live user data feed (Account Update, Balance Update, Order Update).
+
+**Requires authentication**
+
+```js
+const clean = await client.ws.user(msg => {
+  console.log(msg)
+})
 ```
