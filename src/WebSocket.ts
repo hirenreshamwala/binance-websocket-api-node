@@ -200,7 +200,7 @@ const user = (opts: UserOptions) => (
         .getDataStream()
         .then((listenKey: string) => {
           if (keepClosed) {
-            // return closeDataStream(listenKey).catch(f => f)
+            return opts.closeDataStream(listenKey).catch(f => f)
           }
 
           w = OpenWebSocket(`${endpoints.base}/${listenKey}`, opts.webSocket);
