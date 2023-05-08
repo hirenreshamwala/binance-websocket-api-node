@@ -2,7 +2,7 @@ import CryptoJS from 'crypto-es';
 import { isBrowser } from './BrowserOrNode';
 
 export function toUrlParams(params: { [x: string]: any; }): string {
-    return Object.keys(params).map(o => `${o}=${params[o]}`).join('&');
+    return Object.keys(params).sort((a, b) => a.localeCompare(b)).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(params[k])}`).join('&');
 }
 export function generateId(length = 24) {
     let result = '';

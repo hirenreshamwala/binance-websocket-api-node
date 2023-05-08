@@ -41,14 +41,22 @@ export default class BinanceWebsocketApi extends EventDispatcher {
             webSocket: Ws || webSocket
         });
 
-        this.privateRequest = async (id: string, method: string, params?: any) => {
+        const defaultGetTime = () => Date.now()
 
-            const timestamp = await this.time();
+        this.privateRequest = async (id: string, method: string, params?: any) => {
 
             const newPrams = extend({
                 apiKey: apiKey
             }, params || {})
-            newPrams['timestamp'] = timestamp
+
+            if(newPrams.useServerTime){
+                const timestamp = await this.time();
+                newPrams['timestamp'] = timestamp
+            }
+            newPrams['timestamp'] = defaultGetTime();
+            if (newPrams) {
+                delete newPrams.useServerTime
+            }
 
             const signature = await generateSignature(toUrlParams(newPrams), apiSecret);
             newPrams['signature'] = signature;
