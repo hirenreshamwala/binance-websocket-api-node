@@ -254,10 +254,14 @@ export default class BinanceWebsocketApi extends EventDispatcher {
     }
 
     async getDataStream(): Promise<string | undefined>{
-        const result = await this.request(generateId(), 'userDataStream.start', {}, true);
-        if(!result) return undefined;
-        const { listenKey } = result;
-        return listenKey || undefined;
+        try {
+            const result = await this.request(generateId(), 'userDataStream.start', {}, true);
+            if(!result) return undefined;
+            const { listenKey } = result;
+            return listenKey || undefined;
+        } catch(e){
+            return undefined;
+        }
     }
 
     async ping(listenKey?: string): Promise<boolean>{
