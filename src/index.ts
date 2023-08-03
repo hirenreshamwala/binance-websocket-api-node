@@ -49,11 +49,12 @@ export default class BinanceWebsocketApi extends EventDispatcher {
                 apiKey: apiKey
             }, params || {})
 
+            newPrams['timestamp'] = defaultGetTime();
             if(newPrams.useServerTime){
                 const timestamp = await this.time();
                 newPrams['timestamp'] = timestamp
             }
-            newPrams['timestamp'] = defaultGetTime();
+
             if (newPrams) {
                 delete newPrams.useServerTime
             }
@@ -256,23 +257,30 @@ export default class BinanceWebsocketApi extends EventDispatcher {
     async getDataStream(): Promise<string | undefined>{
         try {
             const result = await this.request(generateId(), 'userDataStream.start', {}, true);
-            if(!result) return undefined;
-            const { listenKey } = result;
-            return listenKey || undefined;
+            // if(!result) return undefined;
+            // const { listenKey } = result;
+            return result?.listenKey;
         } catch(e){
             return undefined;
         }
     }
 
     async ping(listenKey?: string): Promise<boolean>{
-        listenKey = listenKey ? listenKey : await this.getDataStream();
-        if(!listenKey){
+        try {
+            if(!listenKey){
+                listenKey = await this.getDataStream();
+            }
+    
+            if(!listenKey){
+                return false;
+            }
+            await this.request(generateId(), 'userDataStream.ping', {
+                listenKey: listenKey
+            }, true);
+            return true;
+        } catch(e){
             return false;
         }
-        await this.request(generateId(), 'userDataStream.ping', {
-            listenKey: listenKey
-        }, true);
-        return true;
     }
 
     async keepDataStream(listenKey?: string): Promise<boolean>{
