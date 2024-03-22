@@ -10,6 +10,12 @@ const userOpenHandler =
     cb({ [transform ? "eventType" : "type"]: "open" });
   };
 
+  const userCloseHandler =
+  (cb: any, transform = true) =>
+  () => {
+    cb({ [transform ? "eventType" : "type"]: "close" });
+  };
+
 const userErrorHandler =
   (cb: any, transform = true) =>
   (error: any) => {
@@ -110,6 +116,7 @@ interface UserOptions {
   webSocket: WebSocket;
   emitSocketOpens: boolean;
   emitSocketErrors: boolean;
+  emitSocketCloses: boolean;
   emitStreamErrors: boolean;
 }
 
@@ -212,6 +219,9 @@ const user = (opts: UserOptions) => (
           }
           if (opts.emitSocketErrors) {
             w.onerror = ({ error }: any) => errorHandler(error);
+          }
+          if (opts.emitSocketCloses) {
+            w.onclose = () => userCloseHandler(cb, transform)();
           }
 
           currentListenKey = listenKey;
