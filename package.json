@@ -8,7 +8,8 @@
   "type": "module",
   "scripts": {
     "build": "rimraf dist && rollup -c && uglifyjs --compress --mangle -o dist/binance-websocket-api-iife.min.js dist/binance-websocket-api-iife.js",
-    "watch": "rollup -c -w"
+    "watch": "rollup -c -w",
+    "watch:build": "tsc --watch"
   },
   "repository": {
     "type": "git",
