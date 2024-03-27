@@ -34,13 +34,14 @@ export default class BinanceWebsocketApi extends EventDispatcher {
 
         const Ws = getWebSocketBrowser();
 
-        this.ws = BinanceWebSocket({
-            getDataStream: this.getDataStream.bind(this),
-            keepDataStream: this.keepDataStream.bind(this),
-            closeDataStream: this.closeDataStream.bind(this),
-            ...params,
-            webSocket: Ws || webSocket
-        });
+        const wsParams = extend({}, params)
+
+        wsParams.getDataStream = this.getDataStream.bind(this);
+        wsParams.keepDataStream = this.keepDataStream.bind(this);
+        wsParams.closeDataStream = this.closeDataStream.bind(this);
+        wsParams.webSocket = Ws || webSocket;
+
+        this.ws = BinanceWebSocket(wsParams);
 
         const defaultGetTime = () => Date.now()
 
