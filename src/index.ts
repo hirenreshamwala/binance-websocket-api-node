@@ -38,6 +38,7 @@ export default class BinanceWebsocketApi extends EventDispatcher {
             getDataStream: this.getDataStream.bind(this),
             keepDataStream: this.keepDataStream.bind(this),
             closeDataStream: this.closeDataStream.bind(this),
+            ...params,
             webSocket: Ws || webSocket
         });
 
