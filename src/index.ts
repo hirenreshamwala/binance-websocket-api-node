@@ -30,7 +30,7 @@ export default class BinanceWebsocketApi extends EventDispatcher {
     constructor(params: any = {}) {
         super()
 
-        const { apiKey, apiSecret, webSocket} = params;
+        const { apiKey, apiSecret, webSocket, wsApiBase} = params;
 
         const Ws = getWebSocketBrowser();
 
@@ -98,7 +98,7 @@ export default class BinanceWebsocketApi extends EventDispatcher {
                     this.dispatchEvent('error', 'websocket already connected');
                     return;
                 }
-                this.connectWebSocket(Ws || webSocket);
+                this.connectWebSocket(Ws || webSocket, wsApiBase);
             } catch (e){
                 this.dispatchEvent('error', 'error connecting websocket');
             }
@@ -111,8 +111,8 @@ export default class BinanceWebsocketApi extends EventDispatcher {
         }
     }
 
-    connectWebSocket(webSocket: undefined) {
-        this.socket = new ReconnectingWebSocket( "wss://ws-api.binance.com:443/ws-api/v3", [], {
+    connectWebSocket(webSocket: undefined, wsApiBase: undefined): void {
+        this.socket = new ReconnectingWebSocket( wsApiBase || "wss://ws-api.binance.com:443/ws-api/v3", [], {
             WebSocket: webSocket,
             connectionTimeout: 4e3,
             debug: false,
@@ -183,6 +183,21 @@ export default class BinanceWebsocketApi extends EventDispatcher {
             const method = 'time';
             const result = await this.request(id, method)
             return result.serverTime;
+        } catch(e: any){
+            this.dispatchEvent('error', e.message);
+        }
+    }
+
+    async pingReq() {
+        try {
+            const id = generateId();
+            const method = 'ping';
+            const result = await this.request(id, method)
+            clearTimeout(this.pingTimeout);
+            this.pingTimeout = setTimeout(() => {
+                this.ping();
+            }, 1000 * 60 * 59)
+            return result;
         } catch(e: any){
             this.dispatchEvent('error', e.message);
         }
